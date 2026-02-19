@@ -19,27 +19,27 @@ export class RegisterDto {
   @MinLength(6)
   password: string;
 
-  @ApiProperty()
-  @Transform(({ value }) => value.trim())
-  @IsString()
-  @MinLength(1)
-  firstName: string;
+  // @ApiProperty()
+  // @Transform(({ value }) => value.trim())
+  // @IsString()
+  // @MinLength(1)
+  // firstName: string;
 
-  @ApiProperty()
-  @Transform(({ value }) => value.trim())
-  @IsString()
-  @MinLength(1)
-  middleName: string;
+  // @ApiProperty()
+  // @Transform(({ value }) => value.trim())
+  // @IsString()
+  // @MinLength(1)
+  // middleName: string;
 
-  @ApiProperty()
-  @Transform(({ value }) => value.trim())
-  @IsString()
-  @MinLength(1)
-  code: string;
+  // @ApiProperty()
+  // @Transform(({ value }) => value.trim())
+  // @IsString()
+  // @MinLength(1)
+  // code: string;
 
-  @ApiProperty()
-  @Transform(({ value }) => value.trim())
-  @IsString()
-  @MinLength(1)
-  phone: string;
+  // @ApiProperty()
+  // @Transform(({ value }) => value.trim())
+  // @IsString()
+  // @MinLength(1)
+  // phone: string;
 }

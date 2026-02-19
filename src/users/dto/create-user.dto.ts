@@ -29,13 +29,16 @@ export class CreateUserDto {
   name?: string;
 
   @ApiProperty()
-  nbPrimerApellido?: string;
+  id_empresa: number;
 
-  @ApiProperty()
-  nbSegundoApellido?: string;
+  // @ApiProperty()
+  // nbPrimerApellido?: string;
 
-  @ApiProperty()
-  numTelefonoCelular?: string;
+  // @ApiProperty()
+  // nbSegundoApellido?: string;
+
+  // @ApiProperty()
+  // numTelefonoCelular?: string;
 
   @ApiProperty()
   @IsOptional() // Marca la propiedad como opcional

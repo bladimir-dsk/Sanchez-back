@@ -12,6 +12,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CustomerInformation } from 'src/customer-information/entities/customer-information.entity';
 
 @Entity()
 export class User {
@@ -35,25 +36,6 @@ export class User {
   @Column({ type: 'enum', default: Role.CLIENTE, enum: Role }) //tipamos enum para que solo pueda resivir los tipos de roles del enum
   role: Role;
 
-  @Column({ nullable: true })
-  code: string;
-
-  @Column({ nullable: true })
-  phone: string;
-
-  @Column({ nullable: true })
-  firstName: string;
-
-  @Column({ nullable: true })
-  middleName: string;
-
-  @Column({ nullable: true })
-  personEmail: string;
-
-  @Column({ nullable: true })
-  direction: string;
-
-  //deletedatecolumn es para hacer eliminaciones logicas y no fisicas en la base de datos
   @DeleteDateColumn()
   deletedAt: Date;
 
@@ -65,4 +47,13 @@ export class User {
   })
   @JoinColumn({ name: 'id_empresa' })
   empresa: Empresa;
+
+  @Column({ nullable: true })
+  id_empresa: number;
+
+  @OneToMany(
+    () => CustomerInformation,
+    (customerInformation) => customerInformation.user,
+  )
+  customerInformations: CustomerInformation[];
 }

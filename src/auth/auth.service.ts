@@ -22,8 +22,7 @@ export class AuthService {
 
   //en el register resivimos el registerDto que se comporta como RegisterDto
   async register(registerDto: RegisterDto) {
-    const { name, email, password, code, phone, firstName, middleName } =
-      registerDto;
+    const { name, email, password } = registerDto;
 
     // Verificar si el usuario ya existe
     const userExists = await this.usersService.findOneByEmail(email);
@@ -34,16 +33,11 @@ export class AuthService {
     // Hashear la contraseña
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    // Crear el usuario sin empresa (por ahora)
     const userData = {
       name,
       email,
       password: hashedPassword,
-      code,
-      phone,
-      firstName,
-      middleName,
-      empresa: null, // La empresa se asignará después de crear el pago
+      id_empresa: 1,
     };
 
     const newUser = await this.usersService.create(userData);
@@ -67,6 +61,7 @@ export class AuthService {
     }
 
     const payload = {
+      id: user.id,
       email: user.email,
       role: user.role,
       name: user.name,
@@ -110,12 +105,6 @@ export class AuthService {
           name: updatedUser.name,
           role: updatedUser.role,
           empresa: updatedUser.empresa,
-          code: updatedUser.code,
-          phone: updatedUser.phone,
-          firstName: updatedUser.firstName,
-          middleName: updatedUser.middleName,
-          personEmail: updatedUser.personEmail,
-          direction: updatedUser.direction,
         },
       };
     } catch (error) {
@@ -169,12 +158,6 @@ export class AuthService {
           name: updatedUser.name,
           role: updatedUser.role,
           empresa: updatedUser.empresa,
-          code: updatedUser.code,
-          phone: updatedUser.phone,
-          firstName: updatedUser.firstName,
-          middleName: updatedUser.middleName,
-          personEmail: updatedUser.personEmail,
-          direction: updatedUser.direction,
         },
       };
     } catch (error) {

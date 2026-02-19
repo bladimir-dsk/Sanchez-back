@@ -163,12 +163,12 @@ export class UsersService {
         'password',
         'name',
         'role',
-        'code',
-        'phone',
-        'firstName',
-        'middleName',
-        'direction',
-        'personEmail',
+        // 'code',
+        // 'phone',
+        // 'firstName',
+        // 'middleName',
+        // 'direction',
+        // 'personEmail',
       ], // Especificar explícitamente los campos incluyendo password
     });
 
@@ -229,62 +229,62 @@ export class UsersService {
       console.log('Rol actualizado');
     }
 
-    // Actualizar code si es diferente
-    if (updateUserDto.code !== undefined && updateUserDto.code !== user.code) {
-      user.code = updateUserDto.code;
-      hasChanges = true;
-      console.log('Code actualizado');
-    }
+    // // Actualizar code si es diferente
+    // if (updateUserDto.code !== undefined && updateUserDto.code !== user.code) {
+    //   user.code = updateUserDto.code;
+    //   hasChanges = true;
+    //   console.log('Code actualizado');
+    // }
 
     // Actualizar phone si es diferente
-    if (
-      updateUserDto.phone !== undefined &&
-      updateUserDto.phone !== user.phone
-    ) {
-      user.phone = updateUserDto.phone;
-      hasChanges = true;
-      console.log('Phone actualizado');
-    }
+    // if (
+    //   updateUserDto.phone !== undefined &&
+    //   updateUserDto.phone !== user.phone
+    // ) {
+    //   user.phone = updateUserDto.phone;
+    //   hasChanges = true;
+    //   console.log('Phone actualizado');
+    // }
 
-    // Actualizar firstName si es diferente
-    if (
-      updateUserDto.firstName !== undefined &&
-      updateUserDto.firstName !== user.firstName
-    ) {
-      user.firstName = updateUserDto.firstName;
-      hasChanges = true;
-      console.log('FirstName actualizado');
-    }
+    // // Actualizar firstName si es diferente
+    // if (
+    //   updateUserDto.firstName !== undefined &&
+    //   updateUserDto.firstName !== user.firstName
+    // ) {
+    //   user.firstName = updateUserDto.firstName;
+    //   hasChanges = true;
+    //   console.log('FirstName actualizado');
+    // }
 
-    // Actualizar middleName si es diferente
-    if (
-      updateUserDto.middleName !== undefined &&
-      updateUserDto.middleName !== user.middleName
-    ) {
-      user.middleName = updateUserDto.middleName;
-      hasChanges = true;
-      console.log('MiddleName actualizado');
-    }
+    // // Actualizar middleName si es diferente
+    // if (
+    //   updateUserDto.middleName !== undefined &&
+    //   updateUserDto.middleName !== user.middleName
+    // ) {
+    //   user.middleName = updateUserDto.middleName;
+    //   hasChanges = true;
+    //   console.log('MiddleName actualizado');
+    // }
 
-    // Actualizar direction si es diferente
-    if (
-      updateUserDto.direction !== undefined &&
-      updateUserDto.direction !== user.direction
-    ) {
-      user.direction = updateUserDto.direction;
-      hasChanges = true;
-      console.log('Direction actualizado');
-    }
+    // // Actualizar direction si es diferente
+    // if (
+    //   updateUserDto.direction !== undefined &&
+    //   updateUserDto.direction !== user.direction
+    // ) {
+    //   user.direction = updateUserDto.direction;
+    //   hasChanges = true;
+    //   console.log('Direction actualizado');
+    // }
 
-    // Actualizar personEmail si es diferente
-    if (
-      updateUserDto.personEmail !== undefined &&
-      updateUserDto.personEmail !== user.personEmail
-    ) {
-      user.personEmail = updateUserDto.personEmail;
-      hasChanges = true;
-      console.log('PersonEmail actualizado');
-    }
+    // // Actualizar personEmail si es diferente
+    // if (
+    //   updateUserDto.personEmail !== undefined &&
+    //   updateUserDto.personEmail !== user.personEmail
+    // ) {
+    //   user.personEmail = updateUserDto.personEmail;
+    //   hasChanges = true;
+    //   console.log('PersonEmail actualizado');
+    // }
 
     if (hasChanges) {
       try {
