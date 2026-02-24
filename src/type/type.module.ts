@@ -5,9 +5,10 @@ import { Type } from './entities/type.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Empresa } from 'src/empresa/entities/empresa.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Category } from 'src/category/entities/category.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Type, Empresa, User])],
+  imports: [TypeOrmModule.forFeature([Type, Empresa, User, Category])],
   controllers: [TypeController],
   providers: [TypeService],
   exports: [TypeService],

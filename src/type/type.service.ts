@@ -6,6 +6,7 @@ import { Type } from './entities/type.entity';
 import { Repository } from 'typeorm';
 import { Empresa } from 'src/empresa/entities/empresa.entity';
 import { UserActiveInterface } from 'src/common/interfaces/user-active.interface';
+import { Category } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class TypeService {
@@ -14,6 +15,8 @@ export class TypeService {
     private readonly typeRepository: Repository<Type>,
     @InjectRepository(Empresa)
     private readonly empresaRepository: Repository<Empresa>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
   async create(createTypeDto: CreateTypeDto, user: UserActiveInterface) {
     const empresa = await this.empresaRepository.findOne({
@@ -31,9 +34,22 @@ export class TypeService {
     if (existingType) {
       throw new BadRequestException('Tipo ya existe');
     }
+
+    const category = await this.categoryRepository.findOne({
+      where: {
+        id_category: createTypeDto.id_category,
+        empresa: {
+          id_empresa: user.id_empresa,
+        },
+      },
+    });
+    if (!category) {
+      throw new BadRequestException('Categoria no encontrada');
+    }
     const type = this.typeRepository.create({
       ...createTypeDto,
       empresa,
+      category,
       id_user: user.id,
       userEmail: user.email,
     });
@@ -41,11 +57,14 @@ export class TypeService {
   }
 
   findAll() {
-    return this.typeRepository.find();
+    return this.typeRepository.find({ relations: ['category', 'empresa'] });
   }
 
   findOne(id: number) {
-    const type = this.typeRepository.findOne({ where: { id_type: id } });
+    const type = this.typeRepository.findOne({
+      where: { id_type: id },
+      relations: ['category', 'empresa'],
+    });
     if (!type) {
       throw new BadRequestException('Tipo no encontrado');
     }
@@ -57,29 +76,63 @@ export class TypeService {
     updateTypeDto: UpdateTypeDto,
     user: UserActiveInterface,
   ) {
-    const type = this.typeRepository.findOne({
+    // ✅ 1. Buscar el tipo
+    const type = await this.typeRepository.findOne({
       where: {
         id_type: id,
         empresa: {
           id_empresa: user.id_empresa,
         },
       },
+      relations: ['category', 'empresa'],
     });
+
     if (!type) {
       throw new BadRequestException('Tipo no encontrado');
     }
-    const existingType = await this.typeRepository.findOne({
-      where: {
-        name: updateTypeDto.name,
-        empresa: { id_empresa: user.id_empresa },
-      },
-    });
-    if (existingType && existingType.id_type !== id) {
-      throw new BadRequestException('Tipo ya existe');
-    }
-    return this.typeRepository.update(id, updateTypeDto);
-  }
 
+    // ✅ 2. Validar nombre duplicado
+    if (updateTypeDto.name) {
+      const existingType = await this.typeRepository.findOne({
+        where: {
+          name: updateTypeDto.name,
+          empresa: { id_empresa: user.id_empresa },
+        },
+      });
+
+      if (existingType && existingType.id_type !== id) {
+        throw new BadRequestException('Tipo ya existe');
+      }
+    }
+
+    // ✅ 3. Validar categoría si viene
+    if (updateTypeDto.id_category) {
+      const category = await this.categoryRepository.findOne({
+        where: {
+          id_category: updateTypeDto.id_category,
+          empresa: {
+            id_empresa: user.id_empresa,
+          },
+        },
+      });
+
+      if (!category) {
+        throw new BadRequestException('Categoria no encontrada');
+      }
+
+      type.category = category;
+    }
+
+    // ✅ 4. Asignar campos nuevos
+    Object.assign(type, updateTypeDto);
+
+    // ✅ 5. Auditoría
+    type.id_user = user.id;
+    type.userEmail = user.email;
+
+    // ✅ 6. Guardar
+    return await this.typeRepository.save(type);
+  }
   async remove(id: number, user: UserActiveInterface) {
     const type = await this.typeRepository.findOne({
       where: {
@@ -88,6 +141,7 @@ export class TypeService {
           id_empresa: user.id_empresa,
         },
       },
+      relations: ['category', 'empresa'],
     });
     if (!type) {
       throw new BadRequestException('Tipo no encontrado');

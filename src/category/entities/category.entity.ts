@@ -1,10 +1,12 @@
 import { Empresa } from 'src/empresa/entities/empresa.entity';
+import { Type } from 'src/type/entities/type.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -18,6 +20,9 @@ export class Category {
 
   @Column()
   imageUrl: string;
+
+  @OneToMany(() => Type, (type) => type.category)
+  types: Type[];
 
   @ManyToOne(() => User, (user) => user.customerInformations)
   // @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })

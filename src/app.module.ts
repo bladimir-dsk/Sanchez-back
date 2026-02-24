@@ -9,10 +9,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CustomerInformationModule } from './customer-information/customer-information.module';
 import { CategoryModule } from './category/category.module';
-import { GendersModule } from './genders/genders.module';
 import { SizesModule } from './sizes/sizes.module';
 import { TypeModule } from './type/type.module';
 import { ColorsModule } from './colors/colors.module';
+import { ProductsModule } from './products/products.module';
 
 dotenv.config();
 
@@ -47,10 +47,10 @@ dotenv.config();
     EmpresaModule,
     CustomerInformationModule,
     CategoryModule,
-    GendersModule,
     SizesModule,
     TypeModule,
     ColorsModule,
+    ProductsModule,
   ],
   controllers: [],
   providers: [],

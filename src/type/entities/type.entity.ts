@@ -1,10 +1,13 @@
+import { Category } from 'src/category/entities/category.entity';
 import { Empresa } from 'src/empresa/entities/empresa.entity';
+import { Product } from 'src/products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -15,6 +18,13 @@ export class Type {
 
   @Column()
   name: string;
+
+  @ManyToOne(() => Category, (category) => category.types)
+  @JoinColumn({ name: 'id_category' })
+  category: Category;
+
+  @OneToMany(() => Product, (product) => product.type)
+  products: Product[];
 
   @ManyToOne(() => User, (user) => user.customerInformations)
   // @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
