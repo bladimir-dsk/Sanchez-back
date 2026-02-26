@@ -13,6 +13,8 @@ import { SizesModule } from './sizes/sizes.module';
 import { TypeModule } from './type/type.module';
 import { ColorsModule } from './colors/colors.module';
 import { ProductsModule } from './products/products.module';
+import { ZonasModule } from './zonas/zonas.module';
+import { VerticesModule } from './vertices/vertices.module';
 
 dotenv.config();
 
@@ -51,6 +53,8 @@ dotenv.config();
     TypeModule,
     ColorsModule,
     ProductsModule,
+    ZonasModule,
+    VerticesModule,
   ],
   controllers: [],
   providers: [],

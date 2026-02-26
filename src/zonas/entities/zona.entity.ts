@@ -1,54 +1,27 @@
 import { Empresa } from 'src/empresa/entities/empresa.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Zona } from 'src/zonas/entities/zona.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Vertex } from 'src/vertices/entities/vertex.entity';
+import { CustomerInformation } from 'src/customer-information/entities/customer-information.entity';
 
-@Entity('customer_information')
-export class CustomerInformation {
+@Entity('zona')
+export class Zona {
   @PrimaryGeneratedColumn()
-  id_customerInformation: number;
+  id_zona: number;
 
   @Column()
-  firstName: string;
+  name: string;
 
   @Column()
-  secondName: string;
-
-  @Column()
-  code: string;
-
-  @Column()
-  phone: string;
-
-  @Column()
-  street: string;
-
-  @Column()
-  city: string;
-
-  @Column()
-  intersectionOne: string;
-
-  @Column({ nullable: true })
-  intersectionTwo: string;
-
-  @Column({ nullable: true })
-  houseNumber: string;
-
-  @Column()
-  reference: string;
-
-  @Column()
-  latitude: string;
-
-  @Column()
-  longitude: string;
+  color_fill: string;
 
   @ManyToOne(() => User, (user) => user.customerInformations)
   // @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
@@ -65,7 +38,12 @@ export class CustomerInformation {
   @JoinColumn({ name: 'id_empresa' })
   empresa: Empresa;
 
-  @ManyToOne(() => Zona, (zona) => zona.id_zona)
-  @JoinColumn({ name: 'id_zona' })
-  zona: Zona;
+  @OneToMany(() => Vertex, (vertex) => vertex.zona)
+  zona: Zona[];
+
+  @OneToMany(
+    () => CustomerInformation,
+    (customerInformation) => customerInformation.zona,
+  )
+  customerInformations: CustomerInformation[];
 }

@@ -24,18 +24,18 @@ export class ColorsService {
     if (!empresa) {
       throw new BadRequestException('Empresa no encontrada');
     }
-    const existingColor = await this.colorRepository.findOne({
-      where: {
-        name: createColorDto.name,
-        empresa: empresa,
-      },
-    });
-    if (!existingColor) {
-      throw new BadRequestException('Color ya existe');
-    }
+    // const existingColor = await this.colorRepository.findOne({
+    //   where: {
+    //     name: createColorDto.name,
+    //     empresa: empresa,
+    //   },
+    // });
+    // if (existingColor) {
+    //   throw new BadRequestException('Color ya existe');
+    // }
     const color = this.colorRepository.create({
       ...createColorDto,
-      empresa,
+      empresa: { id_empresa: user.id_empresa },
       id_user: user.id,
       userEmail: user.email,
     });
@@ -74,15 +74,15 @@ export class ColorsService {
     if (!color) {
       throw new BadRequestException('Color no encontrado');
     }
-    const existingColor = await this.colorRepository.findOne({
-      where: {
-        name: updateColorDto.name,
-        empresa: color.empresa,
-      },
-    });
-    if (existingColor && existingColor.id_color !== id) {
-      throw new BadRequestException('Color ya existe');
-    }
+    // const existingColor = await this.colorRepository.findOne({
+    //   where: {
+    //     name: updateColorDto.name,
+    //     empresa: color.empresa,
+    //   },
+    // });
+    // if (existingColor && existingColor.id_color !== id) {
+    //   throw new BadRequestException('Color ya existe');
+    // }
     return this.colorRepository.save({
       ...color,
       ...updateColorDto,

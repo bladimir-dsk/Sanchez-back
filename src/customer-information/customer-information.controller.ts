@@ -48,15 +48,15 @@ export class CustomerInformationController {
     return this.customerInformationService.findOne(+id, user);
   }
 
-  @Patch(':id')
+  @Patch('/update-information')
   @Auth(Role.CLIENTE)
   update(
-    @Param('id') id: number,
+    // @Param('id') id: number,
     @Body() updateCustomerInformationDto: UpdateCustomerInformationDto,
     @ActiveUser() user: UserActiveInterface,
   ) {
     return this.customerInformationService.update(
-      +id,
+      // +id,
       updateCustomerInformationDto,
       user,
     );

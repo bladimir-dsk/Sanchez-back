@@ -6,6 +6,7 @@ import { CustomerInformation } from './entities/customer-information.entity';
 import { Repository } from 'typeorm';
 import { Empresa } from 'src/empresa/entities/empresa.entity';
 import { UserActiveInterface } from 'src/common/interfaces/user-active.interface';
+import { Zona } from 'src/zonas/entities/zona.entity';
 
 @Injectable()
 export class CustomerInformationService {
@@ -14,6 +15,8 @@ export class CustomerInformationService {
     private customerInformationRepository: Repository<CustomerInformation>,
     @InjectRepository(Empresa)
     private readonly empresaRepository: Repository<Empresa>,
+    @InjectRepository(Zona)
+    private readonly zonaRepository: Repository<Zona>,
   ) {}
   async create(
     createCustomerInformationDto: CreateCustomerInformationDto,
@@ -38,11 +41,21 @@ export class CustomerInformationService {
       throw new BadRequestException('Ya existe información para este usuario');
     }
 
+    const zona = await this.zonaRepository.findOne({
+      where: {
+        id_zona: createCustomerInformationDto.id_zona,
+      },
+    });
+    if (!zona) {
+      throw new BadRequestException('Zona no encontrada');
+    }
+
     const customerInformation = this.customerInformationRepository.create({
       ...createCustomerInformationDto,
       empresa,
       userEmail: user.email,
       id_user: user.id,
+      zona,
     });
     return this.customerInformationRepository.save(customerInformation);
   }
@@ -52,6 +65,7 @@ export class CustomerInformationService {
       where: {
         id_user: user.id,
       },
+      relations: ['zona'],
     });
   }
 
@@ -62,6 +76,7 @@ export class CustomerInformationService {
           id_customerInformation: id,
           id_user: user.id,
         },
+        relations: ['zona'],
       });
     if (!customerInformation) {
       throw new BadRequestException('Información del cliente no encontrada');
@@ -70,14 +85,29 @@ export class CustomerInformationService {
   }
 
   async update(
-    id: number,
+    // id: number,
     updateCustomerInformationDto: UpdateCustomerInformationDto,
     user: UserActiveInterface,
   ) {
-    const customerInformation = await this.findOne(id, user);
+    const customerInformation =
+      await this.customerInformationRepository.findOne({
+        where: {
+          id_user: user.id,
+        },
+        relations: ['zona'],
+      });
+    const zona = await this.zonaRepository.findOne({
+      where: {
+        id_zona: updateCustomerInformationDto.id_zona,
+      },
+    });
+    if (!zona) {
+      throw new BadRequestException('Zona no encontrada');
+    }
     return this.customerInformationRepository.save({
       ...customerInformation,
       ...updateCustomerInformationDto,
+      zona,
     });
   }
 

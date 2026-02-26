@@ -9,46 +9,19 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('customer_information')
-export class CustomerInformation {
+@Entity('vertice')
+export class Vertex {
   @PrimaryGeneratedColumn()
-  id_customerInformation: number;
+  id_verticeZona: number;
 
   @Column()
-  firstName: string;
+  latitud: string;
 
   @Column()
-  secondName: string;
+  longitud: string;
 
   @Column()
-  code: string;
-
-  @Column()
-  phone: string;
-
-  @Column()
-  street: string;
-
-  @Column()
-  city: string;
-
-  @Column()
-  intersectionOne: string;
-
-  @Column({ nullable: true })
-  intersectionTwo: string;
-
-  @Column({ nullable: true })
-  houseNumber: string;
-
-  @Column()
-  reference: string;
-
-  @Column()
-  latitude: string;
-
-  @Column()
-  longitude: string;
+  orden: number;
 
   @ManyToOne(() => User, (user) => user.customerInformations)
   // @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
@@ -65,7 +38,7 @@ export class CustomerInformation {
   @JoinColumn({ name: 'id_empresa' })
   empresa: Empresa;
 
-  @ManyToOne(() => Zona, (zona) => zona.id_zona)
+  @ManyToOne(() => Zona, (z) => z.zona)
   @JoinColumn({ name: 'id_zona' })
   zona: Zona;
 }

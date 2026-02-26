@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateCustomerInformationDto {
   @IsString()
@@ -51,4 +51,8 @@ export class CreateCustomerInformationDto {
   @IsString()
   @ApiProperty()
   longitude: string;
+
+  @IsInt()
+  @ApiProperty()
+  id_zona: number;
 }
