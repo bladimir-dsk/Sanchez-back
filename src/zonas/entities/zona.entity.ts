@@ -39,7 +39,7 @@ export class Zona {
   empresa: Empresa;
 
   @OneToMany(() => Vertex, (vertex) => vertex.zona)
-  zona: Zona[];
+  vertices: Vertex[];
 
   @OneToMany(
     () => CustomerInformation,

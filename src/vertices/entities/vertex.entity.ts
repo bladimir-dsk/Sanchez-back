@@ -38,7 +38,7 @@ export class Vertex {
   @JoinColumn({ name: 'id_empresa' })
   empresa: Empresa;
 
-  @ManyToOne(() => Zona, (z) => z.zona)
+  @ManyToOne(() => Zona, (z) => z.vertices)
   @JoinColumn({ name: 'id_zona' })
   zona: Zona;
 }
