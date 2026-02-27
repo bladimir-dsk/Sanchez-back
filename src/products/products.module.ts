@@ -9,6 +9,7 @@ import { Type } from 'src/type/entities/type.entity';
 import { Category } from 'src/category/entities/category.entity';
 import { SupabaseModule } from 'src/common/supabase/supabase.module';
 import { ProductVariant } from 'src/product-variants/entities/product-variant.entity';
+import { Image } from 'src/images/entities/image.entity';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ProductVariant } from 'src/product-variants/entities/product-variant.en
       Type,
       Category,
       ProductVariant,
+      Image,
     ]),
     SupabaseModule,
   ],

@@ -9,13 +9,14 @@ import {
   UseInterceptors,
   UploadedFile,
   Query,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiBearerAuth, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Role } from 'src/common/enums/rol.enum';
 import { ActiveUser } from 'src/common/decorators/active-user.decorator';
 import { UserActiveInterface } from 'src/common/interfaces/user-active.interface';
@@ -30,13 +31,13 @@ export class ProductsController {
   @Post()
   @ApiConsumes('multipart/form-data')
   @Auth(Role.ADMIN)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FilesInterceptor('files', 10)) // 👈 hasta 10 imágenes
   create(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[], // 👈 array
     @Body() createProductDto: CreateProductDto,
     @ActiveUser() user: UserActiveInterface,
   ) {
-    return this.productsService.create(createProductDto, file, user);
+    return this.productsService.create(createProductDto, files, user);
   }
 
   @Get()
@@ -77,14 +78,24 @@ export class ProductsController {
   @Patch(':id')
   @ApiConsumes('multipart/form-data')
   @Auth(Role.ADMIN)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FilesInterceptor('files', 10))
   update(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
     @Param('id') id: number,
     @Body() updateProductDto: UpdateProductDto,
     @ActiveUser() user: UserActiveInterface,
   ) {
-    return this.productsService.update(+id, updateProductDto, file, user);
+    return this.productsService.update(+id, updateProductDto, files, user);
+  }
+
+  @Patch('data/product/:id')
+  @Auth(Role.ADMIN)
+  updateData(
+    @Param('id') id: number,
+    @Body() updateProductDto: UpdateProductDto,
+    @ActiveUser() user: UserActiveInterface,
+  ) {
+    return this.productsService.updateProduct(+id, updateProductDto, user);
   }
 
   @Delete(':id')

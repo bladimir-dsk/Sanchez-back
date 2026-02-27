@@ -1,6 +1,7 @@
 import { Gender } from 'src/common/enums/gender.enum';
 import { StatusProduct } from 'src/common/enums/statusProduct.enum';
 import { Empresa } from 'src/empresa/entities/empresa.entity';
+import { Image } from 'src/images/entities/image.entity';
 import { ProductVariant } from 'src/product-variants/entities/product-variant.entity';
 import { Type } from 'src/type/entities/type.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -27,8 +28,8 @@ export class Product {
   @Column()
   price: number;
 
-  @Column()
-  imageUrl: string;
+  // @Column()
+  // imageUrl: string;
 
   @Column({ type: 'enum', enum: Gender, default: Gender.UNDEFINED })
   gender: Gender;
@@ -42,6 +43,9 @@ export class Product {
 
   @OneToMany(() => ProductVariant, (productVariant) => productVariant.product)
   productVariants: ProductVariant[];
+
+  @OneToMany(() => Image, (image) => image.product)
+  images: Image[];
 
   @ManyToOne(() => User, (user) => user.customerInformations)
   // @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
