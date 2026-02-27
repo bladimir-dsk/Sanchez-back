@@ -1,10 +1,12 @@
 import { Empresa } from 'src/empresa/entities/empresa.entity';
+import { ProductVariant } from 'src/product-variants/entities/product-variant.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -18,6 +20,9 @@ export class Color {
 
   @Column()
   hex_code: string;
+
+  @OneToMany(() => ProductVariant, (productVariant) => productVariant.color)
+  productVariants: ProductVariant[];
 
   @ManyToOne(() => User, (user) => user.customerInformations)
   // @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })

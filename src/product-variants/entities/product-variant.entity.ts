@@ -1,47 +1,42 @@
-import { Gender } from 'src/common/enums/gender.enum';
+import { Color } from 'src/colors/entities/color.entity';
 import { StatusProduct } from 'src/common/enums/statusProduct.enum';
 import { Empresa } from 'src/empresa/entities/empresa.entity';
-import { ProductVariant } from 'src/product-variants/entities/product-variant.entity';
-import { Type } from 'src/type/entities/type.entity';
+import { Product } from 'src/products/entities/product.entity';
+import { Size } from 'src/sizes/entities/size.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('products')
-export class Product {
+@Entity('product_variant')
+export class ProductVariant {
   @PrimaryGeneratedColumn()
-  id_product: number;
+  id_product_variant: number;
 
-  @Column()
-  name: string;
-
-  @Column({ nullable: true })
-  description: string;
-
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
   @Column()
-  imageUrl: string;
-
-  @Column({ type: 'enum', enum: Gender, default: Gender.UNDEFINED })
-  gender: Gender;
+  stock: number;
 
   @Column({ type: 'enum', enum: StatusProduct, default: StatusProduct.ACTIVE })
   status: StatusProduct;
 
-  @ManyToOne(() => Type, (type) => type.products)
-  @JoinColumn({ name: 'id_type' })
-  type: Type;
+  @ManyToOne(() => Product, (product) => product.productVariants)
+  @JoinColumn({ name: 'id_product' })
+  product: Product;
 
-  @OneToMany(() => ProductVariant, (productVariant) => productVariant.product)
-  productVariants: ProductVariant[];
+  @ManyToOne(() => Color, (color) => color.productVariants)
+  @JoinColumn({ name: 'id_color' })
+  color: Color;
+
+  @ManyToOne(() => Size, (size) => size.productVariants)
+  @JoinColumn({ name: 'id_size' })
+  size: Size;
 
   @ManyToOne(() => User, (user) => user.customerInformations)
   // @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })

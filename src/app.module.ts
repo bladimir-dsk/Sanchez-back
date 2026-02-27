@@ -15,6 +15,7 @@ import { ColorsModule } from './colors/colors.module';
 import { ProductsModule } from './products/products.module';
 import { ZonasModule } from './zonas/zonas.module';
 import { VerticesModule } from './vertices/vertices.module';
+import { ProductVariantsModule } from './product-variants/product-variants.module';
 
 dotenv.config();
 
@@ -55,6 +56,7 @@ dotenv.config();
     ProductsModule,
     ZonasModule,
     VerticesModule,
+    ProductVariantsModule,
   ],
   controllers: [],
   providers: [],

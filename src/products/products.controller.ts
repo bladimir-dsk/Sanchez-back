@@ -8,16 +8,18 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role } from 'src/common/enums/rol.enum';
 import { ActiveUser } from 'src/common/decorators/active-user.decorator';
 import { UserActiveInterface } from 'src/common/interfaces/user-active.interface';
+import { FindProductDto } from './dto/find-product.dto';
 
 @ApiTags('Products')
 @ApiBearerAuth('jwt')
@@ -38,8 +40,33 @@ export class ProductsController {
   }
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'name', required: false, type: String })
+  @ApiQuery({ name: 'gender', required: false })
+  @ApiQuery({ name: 'status', required: false })
+  @ApiQuery({ name: 'id_type', required: false, type: Number })
+  @ApiQuery({ name: 'priceMin', required: false, type: Number })
+  @ApiQuery({ name: 'priceMax', required: false, type: Number })
+  findAll(@Query() query: FindProductDto) {
+    const { page, limit, ...filters } = query;
+
+    return this.productsService.findAll(page, limit, filters);
+  }
+
+  @Get('home')
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'name', required: false, type: String })
+  @ApiQuery({ name: 'gender', required: false })
+  @ApiQuery({ name: 'status', required: false })
+  @ApiQuery({ name: 'id_type', required: false, type: Number })
+  @ApiQuery({ name: 'priceMin', required: false, type: Number })
+  @ApiQuery({ name: 'priceMax', required: false, type: Number })
+  findAllHome(@Query() query: FindProductDto) {
+    const { page, limit, ...filters } = query;
+
+    return this.productsService.findAllHome(page, limit, filters);
   }
 
   @Get(':id')

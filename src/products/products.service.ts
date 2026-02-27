@@ -9,6 +9,9 @@ import { Type } from 'src/type/entities/type.entity';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
 import { UserActiveInterface } from 'src/common/interfaces/user-active.interface';
+import { ProductVariant } from 'src/product-variants/entities/product-variant.entity';
+import { Gender } from 'src/common/enums/gender.enum';
+import { StatusProduct } from 'src/common/enums/statusProduct.enum';
 
 @Injectable()
 export class ProductsService {
@@ -22,6 +25,8 @@ export class ProductsService {
     @Inject('SUPABASE')
     private readonly supabase: SupabaseClient,
     private readonly configService: ConfigService,
+    @InjectRepository(ProductVariant)
+    private readonly productVariantRepository: Repository<ProductVariant>,
   ) {}
 
   private getPublicUrl(path: string) {
@@ -88,21 +93,95 @@ export class ProductsService {
     return saved;
   }
 
-  async findAll() {
-    const products = await this.productRepository.find({
-      relations: ['type'],
-    });
+  async findAll(
+    // user: UserActiveInterface,
+    page?: number,
+    limit?: number,
+    filters?: {
+      name?: string;
+      priceMin?: number;
+      priceMax?: number;
+      gender?: Gender;
+      status?: StatusProduct;
+      id_type?: number;
+    },
+  ) {
+    const query = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.type', 'type')
+      .leftJoinAndSelect('product.productVariants', 'variants')
+      .leftJoinAndSelect('product.empresa', 'empresa');
+    // .where('empresa.id_empresa = :empresaId', {
+    //   empresaId: user.id_empresa,
+    // });
 
-    return products.map((product) => ({
+    // 🔎 Filtros dinámicos
+
+    if (filters?.name) {
+      query.andWhere('LOWER(product.name) LIKE LOWER(:name)', {
+        name: `%${filters.name}%`,
+      });
+    }
+
+    if (filters?.priceMin) {
+      query.andWhere('product.price >= :priceMin', {
+        priceMin: filters.priceMin,
+      });
+    }
+
+    if (filters?.priceMax) {
+      query.andWhere('product.price <= :priceMax', {
+        priceMax: filters.priceMax,
+      });
+    }
+
+    if (filters?.gender) {
+      query.andWhere('product.gender = :gender', {
+        gender: filters.gender,
+      });
+    }
+
+    if (filters?.status) {
+      query.andWhere('product.status = :status', {
+        status: filters.status,
+      });
+    }
+
+    if (filters?.id_type) {
+      query.andWhere('type.id_type = :id_type', {
+        id_type: filters.id_type,
+      });
+    }
+
+    // 🔹 Paginación opcional
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      query.skip(skip).take(limit);
+    }
+
+    const [data, total] = await query.getManyAndCount();
+
+    const bucketProducts = data.map((product) => ({
       ...product,
-      imageUrl: this.getPublicUrl(product.imageUrl),
+      imageUrl: product.imageUrl ? this.getPublicUrl(product.imageUrl) : null,
     }));
+
+    return {
+      data: bucketProducts,
+      total,
+      paginacion: {
+        page: page ?? 1,
+        lastPage: limit ? Math.ceil(total / limit) : 1,
+        nextPage: page ? page + 1 : 2,
+      },
+      filters,
+    };
   }
 
   async findOne(id: number) {
     const product = await this.productRepository.findOne({
       where: { id_product: id },
-      relations: ['type'],
+      relations: ['type', 'productVariants'],
     });
 
     if (!product) {
@@ -112,6 +191,119 @@ export class ProductsService {
     product.imageUrl = this.getPublicUrl(product.imageUrl);
 
     return product;
+  }
+
+  async findAllHome(
+    page?: number,
+    limit?: number,
+    filters?: {
+      name?: string;
+      priceMin?: number;
+      priceMax?: number;
+      gender?: Gender;
+      status?: StatusProduct;
+      id_type?: number;
+    },
+  ) {
+    const query = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoin('product.type', 'type')
+      .leftJoin('product.productVariants', 'variant')
+      .leftJoin('variant.color', 'color')
+      .select([
+        'product.id_product AS id_product',
+        'product.name AS name',
+        'product.price AS price',
+        'product.gender AS gender',
+        'product.status AS status',
+        'product.imageUrl AS imageUrl',
+        'type.id_type AS type_id',
+        'type.name AS type_name',
+      ])
+      .addSelect(
+        `
+      COALESCE(
+        json_agg(
+          DISTINCT jsonb_build_object(
+            'id_color', color.id_color,
+            'name', color.name,
+            'hex_code', color.hex_code
+          )
+        ) FILTER (WHERE color.id_color IS NOT NULL),
+        '[]'
+      )
+    `,
+        'colors',
+      )
+      .groupBy('product.id_product')
+      .addGroupBy('type.id_type');
+
+    // 🔎 Filtros
+    if (filters?.name) {
+      query.andWhere('LOWER(product.name) LIKE LOWER(:name)', {
+        name: `%${filters.name}%`,
+      });
+    }
+
+    if (filters?.priceMin) {
+      query.andWhere('product.price >= :priceMin', {
+        priceMin: filters.priceMin,
+      });
+    }
+
+    if (filters?.priceMax) {
+      query.andWhere('product.price <= :priceMax', {
+        priceMax: filters.priceMax,
+      });
+    }
+
+    if (filters?.gender) {
+      query.andWhere('product.gender = :gender', {
+        gender: filters.gender,
+      });
+    }
+
+    if (filters?.status) {
+      query.andWhere('product.status = :status', {
+        status: filters.status,
+      });
+    }
+
+    if (filters?.id_type) {
+      query.andWhere('type.id_type = :id_type', {
+        id_type: filters.id_type,
+      });
+    }
+
+    // 🔹 Paginación
+    if (page && limit) {
+      query.offset((page - 1) * limit).limit(limit);
+    }
+
+    const data = await query.getRawMany();
+
+    const formatted = data.map((product) => ({
+      id_product: product.id_product,
+      name: product.name,
+      price: product.price,
+      gender: product.gender,
+      status: product.status,
+      imageUrl: product.imageurl ? this.getPublicUrl(product.imageurl) : null,
+      type: {
+        id_type: product.type_id,
+        name: product.type_name,
+      },
+      colors: product.colors,
+    }));
+
+    return {
+      data: formatted,
+      pagination: {
+        page: page ?? 1,
+        lastPage: limit ? Math.ceil(data.length / limit) : 1,
+      },
+      filters,
+    };
   }
 
   async update(

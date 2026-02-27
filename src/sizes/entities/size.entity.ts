@@ -1,10 +1,12 @@
 import { Empresa } from 'src/empresa/entities/empresa.entity';
+import { ProductVariant } from 'src/product-variants/entities/product-variant.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -15,6 +17,9 @@ export class Size {
 
   @Column()
   name: string;
+
+  @OneToMany(() => ProductVariant, (productVariant) => productVariant.size)
+  productVariants: ProductVariant[];
 
   @ManyToOne(() => User, (user) => user.customerInformations)
   // @JoinColumn({ name: 'userEmail', referencedColumnName: 'email' })
