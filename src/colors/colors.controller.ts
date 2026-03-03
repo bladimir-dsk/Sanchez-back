@@ -6,15 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ColorsService } from './colors.service';
 import { CreateColorDto } from './dto/create-color.dto';
 import { UpdateColorDto } from './dto/update-color.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ActiveUser } from 'src/common/decorators/active-user.decorator';
 import { UserActiveInterface } from 'src/common/interfaces/user-active.interface';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/common/enums/rol.enum';
+import { FindColorDto } from './dto/find-color.dto';
 
 @ApiTags('Colors')
 @ApiBearerAuth('jwt')
@@ -32,8 +34,12 @@ export class ColorsController {
   }
 
   @Get()
-  findAll() {
-    return this.colorsService.findAll();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'name', required: false, type: String })
+  findAll(@Query() findColorDto: FindColorDto) {
+    const { page, limit, ...filters } = findColorDto;
+    return this.colorsService.findAll(page, limit, filters);
   }
 
   @Get(':id')

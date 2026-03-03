@@ -42,8 +42,35 @@ export class ColorsService {
     return this.colorRepository.save(color);
   }
 
-  findAll() {
-    return this.colorRepository.find();
+  async findAll(
+    page?: number,
+    limit?: number,
+    filters?: {
+      name?: string;
+    },
+  ) {
+    const query = this.colorRepository.createQueryBuilder('color');
+
+    if (filters?.name) {
+      query.andWhere('LOWER(color.name) LIKE LOWER(:name)', {
+        name: `%${filters.name}%`,
+      });
+    }
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      query.skip(skip).take(limit);
+    }
+    const [data, total] = await query.getManyAndCount();
+
+    return {
+      data,
+      total,
+      paginacion: {
+        page: page ?? 1,
+        lastPage: limit ? Math.ceil(total / limit) : 1,
+        limit,
+      },
+    };
   }
 
   findOne(id: number) {
